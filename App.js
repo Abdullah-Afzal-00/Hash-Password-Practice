@@ -23,6 +23,8 @@
 const express = require("express");
 const CryptoJS = require("crypto-js");
 
+const { SECRETKEY } = require("./Constants");
+
 const app = express();
 
 app.use(express.json());
@@ -33,13 +35,17 @@ const isValid = (req, res, next) => {
   else res.send("email or password is Empty !");
 };
 app.use(isValid, async (req, res, next) => {
-  const secretKey = ")V@Ln3_Az=+G9xr+";
   //Encryption
   const cypherText = CryptoJS.AES.encrypt(
     req.body.password,
-    secretKey
+    SECRETKEY
   ).toString();
-  console.log(cypherText);
+  console.log("Encrypted = ", cypherText);
+  //Decryption
+  const bytes = CryptoJS.AES.decrypt(cypherText, SECRETKEY);
+  console.log("Bytes = ", bytes);
+  const originalText = bytes.toString(CryptoJS.enc.Utf8);
+  console.log("Decrypted = ", originalText);
   res.send("Got te Response");
 });
 app.listen(3000, () => console.log("App is listening on 3000 port"));
