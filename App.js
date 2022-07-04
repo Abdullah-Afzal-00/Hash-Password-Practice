@@ -22,6 +22,7 @@
 
 const express = require("express");
 const CryptoJS = require("crypto-js");
+const jwt = require("jsonwebtoken");
 
 const { SECRETKEY } = require("./Constants");
 
@@ -34,18 +35,21 @@ const isValid = (req, res, next) => {
   if (req.body.email.length != 0 && req.body.password != 0) next();
   else res.send("email or password is Empty !");
 };
-app.use(isValid, async (req, res, next) => {
+app.post("/", isValid, async (req, res, next) => {
   //Encryption
   const cypherText = CryptoJS.AES.encrypt(
     req.body.password,
     SECRETKEY
   ).toString();
   console.log("Encrypted = ", cypherText);
-  //Decryption
-  const bytes = CryptoJS.AES.decrypt(cypherText, SECRETKEY);
-  console.log("Bytes = ", bytes);
-  const originalText = bytes.toString(CryptoJS.enc.Utf8);
-  console.log("Decrypted = ", originalText);
+
+  const token = jwt.sign(req.body, SECRETKEY);
+  console.log("Token = ", token);
+  const decoded = jwt.verify(token, SECRETKEY, (err, decoded) => {
+    if (err) console.log("Got the Error!");
+    else console.log("Decoded = ", decoded);
+  });
+  //console.log("Decoded = ", decoded);
   res.send("Got te Response");
 });
 app.listen(3000, () => console.log("App is listening on 3000 port"));
