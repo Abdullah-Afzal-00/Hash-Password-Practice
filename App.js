@@ -23,12 +23,21 @@
 const express = require("express");
 const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
+const moment = require("moment");
+
+require("dotenv").config();
 
 const { SECRETKEY } = require("./Constants");
 
 const app = express();
 
 app.use(express.json());
+console.log(moment().format(`d MMMM yyyy, dddd , h:mm:ss a`));
+const now = new Date();
+const t = new Intl.DateTimeFormat("ps").format(now);
+console.log(t);
+
+console.log(process.env.USER_KEY);
 
 const isValid = (req, res, next) => {
   console.log(req.body.password);
